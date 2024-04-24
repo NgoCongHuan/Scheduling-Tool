@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %} Home Page {% endblock %}
+
+{% block content %} 
+<div class="container">
+    <h2>Step 1:</h2>
+    <p>Please fill in the information below</p>
+    <form action="#" method="post">
+        <div class="row">
+            <div class="col-sm-5 mb-3 mt-1">
+                <div class="input-group">
+                    <span class="input-group-text">Employees</span>
+                    <input type="number" class="form-control" id="Employees" placeholder="Enter the number of employees" name="Employees">
+                </div>
+            </div>
+            <div class="col-sm-5 mb-3 mt-1">
+                <div class="input-group">
+                    <span class="input-group-text">Days</span>
+                    <input type="number" class="form-control" id="Days" placeholder="Enter the number of days" name="Days">
+                </div>
+            </div>
+            <div class="col-sm-5 mb-3 mt-1">
+                <div class="input-group">
+                    <span class="input-group-text">Shifts</span>
+                    <input type="number" class="form-control" id="Shifts" placeholder="Enter the number of shifts per day" name="Shifts">
+                </div>
+            </div>
+            <div class="col-sm-5 mb-3 mt-1">
+                <div class="input-group">
+                    <span class="input-group-text">Employee per shift</span>
+                    <input type="number" class="form-control" id="EmployeePerShift" placeholder="Enter the number of employee per shift" name="EmployeePerShift">
+                </div>
+            </div>
+            <div class="col-sm-2 mb-3 mt-1">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}  
+

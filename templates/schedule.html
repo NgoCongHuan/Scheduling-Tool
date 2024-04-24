@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Schedule{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Step 3:</h2>
+    <p>Bảng phân công ca làm việc cho nhân viên</p>
+    <div class="col-sm-12 mb-3 mt-1">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                    <th scope="col">Ca</th>
+                    {% for day in schedule_of_store.keys() %}
+                        <th scope="col">{{day}}</th>
+                    {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for shift in range(shifts) %}
+                        <tr>
+                            <td>Ca {{shift+1}}</td>
+                            {% for day in schedule_of_store.keys() %}
+                                
+                                <td>{{ schedule_of_store[day][shift] | join(', ') | replace('[', '') | replace(']', '') }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <p>Bảng tổng kết số ca làm của mỗi nhân viên</p>
+    <div class="col-sm-12 mb-3 mt-1">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                    <th scope="col">Nhân viên</th>
+                    <th scope="col">Tổng số ca</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for employee, total_shift in count_shift_of_week.items() %}
+                        <tr>
+                            <td>{{employee}}</td>
+                            <td>{{total_shift}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

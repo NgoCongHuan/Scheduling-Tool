@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block title %}Schedule{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Step 2:</h2>
+    <p>Please tick the daily shifts that employees can work</p>
+    <div class="col-sm-12 mb-3 mt-1">
+        <div class="table-responsive">
+            <form action="#" method="POST" id="ScheduleForm">
+                <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Name</th>
+                        {% for day in range(1, Days + 1) %}
+                            <th scope="col">Ngày {{day}}</th>
+                        {% endfor %}
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for employee in range(1, Employees + 1) %}
+                            <tr>
+                                <th scope="row">{{employee}}</th>
+                                <td><input type="text" class="form-control" id="{{employee}}" name="{{employee}}" placeholder="Name of employee..." style="border:0"></td>
+                                {% for day in range(1, Days + 1) %}
+                                    <td>
+                                        {% for shift in range(1, Shifts + 1) %}
+                                        
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="1" id="shift{{employee}}_{{day}}_{{shift}}" name="shift{{employee}}_{{day}}_{{shift}}">
+                                                <label class="form-check-label" for="shift{{employee}}_{{day}}_{{shift}}">Ca {{shift}}</label>
+                                            </div>
+                                        
+                                        {% endfor %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <button type="submit" class="btn btn-primary" style="float:right">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('ScheduleForm').addEventListener('submit', function(event) {
+        
+        event.preventDefault(); // Ngăn chặn hành động submit
+
+        var mapping_employees = {} // Tạo từ điển 
+
+        // Lặp qua các ô trong thẻ input
+        document.querySelectorAll('input[type="text"]').forEach(function(text) {
+            var employeeIndex = text.id
+            var employeeName = text.value
+
+            // console.log("employeeIndex: ", employeeIndex)
+            // console.log("employeeName: ", employeeName)
+            
+            if (!mapping_employees.hasOwnProperty(employeeName)) {
+                mapping_employees[employeeName] = employeeIndex
+            }
+
+        })
+
+        // console.log(mapping_employees)
+        
+        var employees_shifts = {}
+        for (let employeeName in mapping_employees) {
+            employeeID = mapping_employees[employeeName]
+            employees_shifts[employeeID] = []
+        }
+
+        var arr_temp = [];
+        var employee_temp = null;
+        var day_temp = null;
+
+        // Lặp qua các ô trong check box
+        document.querySelectorAll('input[type="checkbox"]').forEach(function(checkbox, index, checkboxes) {
+            //    
+            var employeeID_CB = checkbox.id.split('_')[0].replace('shift', '');
+            var day_CB = checkbox.id.split('_')[1];
+            var shift_CB = checkbox.id.split('_')[2];
+            var bool_CB = checkbox.checked ? 1 : 0;
+
+            // console.log("EmployeeID check box: ", employeeID_CB)
+            // console.log("Day check box: ", day_CB)
+            // console.log("Shift check box: ", shift_CB)
+
+            // Kiểm tra nếu employeeID_CB hoặc day_CB đã thay đổi so với lần lặp trước
+            if (employeeID_CB != employee_temp || day_CB != day_temp) {
+                // Nếu đã có dữ liệu trong arr_temp, thêm arr_temp vào employees_shifts và reset arr_temp
+                if (arr_temp.length > 0) {
+                    employees_shifts[employee_temp].push(arr_temp);
+                    arr_temp = [];
+                }
+                // Cập nhật giá trị của employee_temp và day_temp
+                employee_temp = employeeID_CB;
+                day_temp = day_CB;
+            }
+            
+            // Thêm giá trị bool_CB vào arr_temp
+            arr_temp.push(bool_CB);
+
+            // Nếu là lần lặp cuối cùng, thêm arr_temp vào employees_shifts
+            if (index == checkboxes.length - 1) {
+                employees_shifts[employee_temp].push(arr_temp);
+            }
+        })
+
+        // console.log(employees_shifts)
+
+        var json_employees_shifts_temp = JSON.stringify(employees_shifts)
+        var json_mapping_employees = JSON.stringify(mapping_employees)
+
+        // Gửi dữ liệu đến Flask 
+        fetch('/process3/' + encodeURIComponent(json_employees_shifts_temp) + '/' + encodeURIComponent(json_mapping_employees), {
+            method: 'GET'   
+        }).then(response => {
+            if (response.ok) {
+                console.log('Data send sucessully')
+                // Chuyển hướng người dùng đến trang /schedule
+            window.location.href = '/schedule';
+            }
+            else {
+                console.error("Fail to send data");
+            }
+        }).catch(error => {
+            console.error('Error: ', error)
+        });
+    });
+</script>
+
+{% endblock %}
+
+
